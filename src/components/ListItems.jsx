@@ -37,9 +37,9 @@ const ListItems = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-center text-red-500 mt-10"
+        className="text-center text-red-500 my-10 bg-red-200 text-2xl p-10 font-semibold mx-auto w-[80%]"
       >
-        Error fetching products: {error?.message || "Unknown error"}
+        There was an error fetching product,please try again
       </motion.div>
     );
   }

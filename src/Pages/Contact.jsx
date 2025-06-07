@@ -34,6 +34,7 @@ const Contact = () => {
       toast.success("Message submitted");
       setSubmitted(true);
       reset(); // reset form after successful submission
+      window.scrollTo(0, 0);
     } catch (error) {
       console.error(error);
       toast.error("There was an error, please try again");

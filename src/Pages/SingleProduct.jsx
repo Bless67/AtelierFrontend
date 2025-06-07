@@ -7,13 +7,13 @@ import { FaCartShopping, FaPlus, FaMinus } from "react-icons/fa6";
 import {
   getSingleCart,
   addCart,
-  baseUrl,
   updateCart,
   deleteCart,
 } from "../utils/CartUtils";
 import { useCart } from "../utils/CartProvider";
 import { useEffect, useState } from "react";
 import api from "../utils/api";
+import { motion } from "framer-motion";
 
 const SingleProduct = () => {
   const { id } = useParams();
@@ -26,7 +26,7 @@ const SingleProduct = () => {
     return response.data;
   };
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["products", id],
     queryFn: fetchData,
     staleTime: 5 * 60 * 1000,
@@ -84,6 +84,15 @@ const SingleProduct = () => {
       />
       {isLoading && (
         <div className="w-16 h-16 mx-auto my-40 animate-spin border-4 border-gray-300 border-t-gray-800 rounded-full" />
+      )}
+      {isError && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center text-red-500 my-10 bg-red-200 text-2xl p-10 font-semibold mx-auto w-[80%]"
+        >
+          There was an error fetching product,please try again
+        </motion.div>
       )}
 
       {data && cartData && (
