@@ -5,7 +5,6 @@ import {
   FaHome,
   FaClipboardList,
   FaInfoCircle,
-  FaServicestack,
   FaPhone,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,9 +15,8 @@ const SideBar = ({ sideBarOpen, setSideBarOpen }) => {
   const currentPath = location.pathname;
 
   const handleNavigate = (path) => {
-    if (path !== currentPath) {
-      navigate(path);
-    }
+    navigate(path);
+
     setSideBarOpen(false);
   };
 
@@ -56,7 +54,7 @@ const SideBar = ({ sideBarOpen, setSideBarOpen }) => {
 
           {/* Sidebar */}
           <motion.aside
-            className="fixed top-0 left-0 h-full w-[70%] bg-gray-800 text-white z-100 shadow-lg md:hidden"
+            className="bg-gradient-to-br from-black via-gray-900 to-gray-800 fixed top-0 left-0 h-full w-[70%] text-white z-100 shadow-lg md:hidden"
             initial="hidden"
             animate="visible"
             exit="hidden"

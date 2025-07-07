@@ -15,12 +15,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.get("user/");
       setUser(response.data);
-      console.log(response.data);
+
       return response.data;
     } catch (err) {
       setUser(null);
-
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -36,21 +34,16 @@ export const AuthProvider = ({ children }) => {
       const theUser = await getUser();
       setUser(theUser);
       navigate("/");
-      console.log(response.data);
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) {}
   };
 
   const logout = async () => {
     try {
       const response = await api.post("logout/");
-      console.log(response.data);
+
       setUser(null);
       navigate("/");
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {

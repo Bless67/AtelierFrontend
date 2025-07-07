@@ -1,9 +1,20 @@
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import NavBar from "../Layout/NavBar";
 import ProductCarousel from "../Layout/ProductCarousel";
 import { ToastContainer, toast } from "react-toastify";
-import { FaCartShopping, FaPlus, FaMinus } from "react-icons/fa6";
+import {
+  FaShoppingCart,
+  FaPlus,
+  FaMinus,
+  FaHeart,
+  FaShare,
+  FaStar,
+  FaShieldAlt,
+  FaTruck,
+  FaUndo,
+} from "react-icons/fa";
+
 import {
   getSingleCart,
   addCart,
@@ -13,30 +24,41 @@ import {
 import { useCart } from "../utils/CartProvider";
 import { useEffect, useState } from "react";
 import api from "../utils/api";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const SingleProduct = () => {
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const { setCartQuantity, cartQuantity } = useCart();
   const [cartData, setCartData] = useState(null);
+  const [cartLoading, setCartLoading] = useState(true);
+  const [cartError, setCartError] = useState(null);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const fetchData = async () => {
     const response = await api.get(`product/${id}/`);
-    console.log(response.data);
     return response.data;
   };
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["products", id],
+    queryKey: ["product", id],
     queryFn: fetchData,
     staleTime: 5 * 60 * 1000,
   });
 
-  const handleAddCart = (productId, quantity) => {
-    addCart(productId, quantity);
-    setCartQuantity((prevQuantity) => prevQuantity + quantity);
-    setCartData((prevData) => ({ ...prevData, quantity: quantity }));
-    toast.success("Cart added!");
+  const handleAddCart = async (productId, quantity) => {
+    try {
+      await addCart(productId, quantity);
+      setCartQuantity((prevQuantity) => prevQuantity + quantity);
+      setCartData((prevData) => ({ ...prevData, quantity: quantity }));
+      toast.success("🛒 Added to cart successfully!", {
+        className: "!bg-green-50 !text-green-800 !border-l-4 !border-green-400",
+      });
+    } catch (err) {
+      toast.error("Failed to add to cart!");
+    }
   };
 
   const handleUpdate = async (how, quantity, productId) => {
@@ -55,155 +77,404 @@ const SingleProduct = () => {
         toast.success("Cart updated!");
       }
     } catch (err) {
-      console.error("Failed to update cart:", err);
+      toast.error("Failed to update cart!");
     }
   };
 
   const fetchCartData = async () => {
-    const response = await getSingleCart(id);
-    setCartData(response);
+    try {
+      setCartLoading(true);
+      setCartError(null);
+      const response = await getSingleCart(id);
+      setCartData(response || {});
+    } catch (err) {
+      setCartError(err);
+      setCartData({});
+    } finally {
+      setCartLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchCartData();
-  }, []);
+    if (id) {
+      fetchCartData();
+    }
+  }, [id]);
+
+  const isInCart = () => {
+    return (
+      cartData &&
+      typeof cartData === "object" &&
+      Object.keys(cartData).length > 0
+    );
+  };
+
+  const handleWishlist = () => {
+    setIsWishlisted(!isWishlisted);
+    toast.success(
+      isWishlisted ? "💔 Removed from wishlist" : "💖 Added to wishlist!"
+    );
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: data?.name,
+        text: `Check out this product: ${data?.name}`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("🔗 Link copied to clipboard!");
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
+  const renderCartControls = (isMobile = false) => {
+    if (cartLoading) {
+      return (
+        <div className="animate-pulse bg-gradient-to-r from-gray-200 to-gray-300 h-14 rounded-xl"></div>
+      );
+    }
+
+    if (!isInCart()) {
+      return (
+        <motion.button
+          onClick={() => handleAddCart(data.id, 1)}
+          disabled={!data}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className={`group relative overflow-hidden ${
+            isMobile
+              ? "w-full flex items-center justify-center gap-3 text-lg font-semibold py-4 px-6 rounded-xl"
+              : "flex items-center gap-3 text-lg font-semibold py-4 px-8 rounded-xl"
+          } bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+          <FaShoppingCart className="text-xl relative z-10" />
+          <span className="relative z-10">Add to Cart</span>
+        </motion.button>
+      );
+    }
+
+    return (
+      <motion.div
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        className={`${
+          isMobile
+            ? "flex justify-between items-center bg-white p-4 rounded-xl shadow-lg border border-gray-100"
+            : "flex items-center gap-4 bg-white p-4 rounded-xl shadow-lg border border-gray-100"
+        }`}
+      >
+        <motion.button
+          onClick={() => handleUpdate("-", parseInt(cartData?.quantity), id)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-3 text-gray-600 hover:text-red-500 border-2 border-gray-200 hover:border-red-300 rounded-lg hover:bg-red-50 transition-all duration-200"
+        >
+          <FaMinus className="text-sm" />
+        </motion.button>
+
+        <div className="flex items-center gap-2 px-4">
+          <span className="text-xl font-bold text-gray-800">
+            {cartData?.quantity}
+          </span>
+          <span className="text-sm text-gray-500">in cart</span>
+        </div>
+
+        <motion.button
+          onClick={() => handleUpdate("+", parseInt(cartData?.quantity), id)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-3 text-gray-600 hover:text-green-500 border-2 border-gray-200 hover:border-green-300 rounded-lg hover:bg-green-50 transition-all duration-200"
+        >
+          <FaPlus className="text-sm" />
+        </motion.button>
+      </motion.div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <NavBar showSearchbtn={true} />
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex justify-center items-center py-16"
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-12 h-12 border-4 border-gray-200 rounded-full border-t-gray-700"
+            />
+            <motion.span
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="ml-3 text-gray-600"
+            >
+              Loading product and cart...
+            </motion.span>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <NavBar showSearchbtn={true} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-center min-h-[80vh]"
+        >
+          <div className="text-center bg-white p-12 rounded-2xl shadow-xl max-w-md mx-4">
+            <div className="text-6xl mb-4">😞</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              Oops! Something went wrong
+            </h2>
+            <p className="text-gray-600 mb-6">
+              We couldn't load this product. Please try again later.
+            </p>
+            <button
+              onClick={() =>
+                queryClient.invalidateQueries({ queryKey: ["product", id] })
+              }
+              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200"
+            >
+              Try Again
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <NavBar showSearchbtn={true} />
+
       <ToastContainer
-        position="top-left"
+        position="top-right"
         autoClose={3000}
         hideProgressBar={false}
-        newestOnTop={false}
+        newestOnTop
         closeOnClick
         pauseOnFocusLoss
         draggable
-        pauseOnHover={false}
-        theme="dark"
+        pauseOnHover
+        theme="light"
+        className="mt-16"
       />
-      {isLoading && (
-        <div className="w-16 h-16 mx-auto my-40 animate-spin border-4 border-gray-300 border-t-gray-800 rounded-full" />
-      )}
-      {isError && (
+
+      {cartError && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center text-red-500 my-10 bg-red-200 text-2xl p-10 font-semibold mx-auto w-[80%]"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mx-4 mt-4 p-4 bg-orange-50 border-l-4 border-orange-400 rounded-r-lg"
         >
-          There was an error fetching product,please try again
+          <div className="flex items-center">
+            <div className="text-orange-400 mr-3">⚠️</div>
+            <p className="text-orange-800 text-sm">
+              Cart data couldn't be loaded, but you can still add items to cart
+            </p>
+          </div>
         </motion.div>
       )}
 
-      {data && cartData && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 px-6 md:p-12 text-gray-800">
-          {/* Product Image */}
-          <div className="flex justify-center items-center w-[90%] mt-5 md:mt-0 mx-auto md:mx-0">
-            <ProductCarousel images={data.images} />
-          </div>
+      {data && (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="max-w-7xl mx-auto px-4 py-8"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Product Images */}
+            <motion.div
+              variants={itemVariants}
+              className="space-y-4 overflow-hidden"
+            >
+              <ProductCarousel images={data.images} />
+            </motion.div>
 
-          {/* Product Info */}
-          <div className="flex flex-col justify-between">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-3">
-                {data.name}
-              </h2>
-              <p className="text-3xl font-semibold text-gray-800 mb-5">
-                ₦{data.price}
-              </p>
-              <p className=" font-semibold text-gray-800 mb-5">
-                Category: {data.category}
-              </p>
+            {/* Product Info */}
+            <motion.div variants={itemVariants} className="space-y-6">
+              {/* Header Section */}
+              <div className="bg-white rounded-2xl p-8 shadow-lg">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <motion.h1
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2 leading-tight"
+                    >
+                      {data.name}
+                    </motion.h1>
 
-              {/* Desktop Cart Controls */}
-              <div className="hidden md:flex items-center my-6">
-                {cartData && Object.keys(cartData).length === 0 ? (
-                  <button
-                    onClick={() => handleAddCart(data.id, 1)}
-                    className="flex items-center gap-3 text-lg bg-gray-800 hover:bg-gray-900 transition-all duration-200 p-4 px-6 rounded-xl text-white font-medium cursor-pointer"
-                  >
-                    <FaCartShopping className="text-xl" />
-                    Add to Cart
-                  </button>
-                ) : (
-                  <div className="flex items-center gap-4 bg-white p-3 rounded-xl shadow-md">
-                    <button
-                      onClick={() =>
-                        handleUpdate("-", parseInt(cartData?.quantity), id)
-                      }
-                      className="p-3 text-gray-500 border border-gray-500 rounded-md hover:bg-gray-100 cursor-pointer"
-                    >
-                      <FaMinus />
-                    </button>
-                    <span className="px-4 py-1 text-xl border-gray-300">
-                      {cartData?.quantity}
-                    </span>
-                    <button
-                      onClick={() =>
-                        handleUpdate("+", parseInt(cartData?.quantity), id)
-                      }
-                      className="p-3 text-gray-500 border border-gray-500 hover:bg-gray-100 rounded-md cursor-pointer"
-                    >
-                      <FaPlus />
-                    </button>
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <FaStar key={i} className="text-yellow-400 text-sm" />
+                        ))}
+                      </div>
+                      <span className="text-gray-600 text-sm">
+                        (4.8) • 124 reviews
+                      </span>
+                    </div>
                   </div>
-                )}
+
+                  <div className="flex gap-2">
+                    <motion.button
+                      onClick={handleWishlist}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className={`p-3 rounded-full border-2 transition-all duration-200 ${
+                        isWishlisted
+                          ? "bg-red-50 border-red-200 text-red-500"
+                          : "bg-gray-50 border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200"
+                      }`}
+                    >
+                      <FaHeart className={isWishlisted ? "fill-current" : ""} />
+                    </motion.button>
+
+                    {/* <motion.button
+                      onClick={handleShare}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-3 rounded-full border-2 border-gray-200 bg-gray-50 text-gray-400 hover:text-blue-500 hover:border-blue-200 transition-all duration-200"
+                    >
+                      <FaShare />
+                    </motion.button> */}
+                  </div>
+                </div>
+
+                {/* Price */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="mb-6"
+                >
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-4xl font-bold text-gray-900">
+                      ₦{data.price}
+                    </span>
+                    <span className="text-lg text-gray-500 line-through">
+                      ₦{data.original_price}
+                    </span>
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                      {Math.floor(
+                        ((data.original_price - data.price) / data.price) * 100
+                      )}
+                      % OFF
+                    </span>
+                  </div>
+                </motion.div>
+
+                {/* Category */}
+                <div className="mb-6">
+                  <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
+                    <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                    {data.category}
+                  </span>
+                </div>
+
+                {/* Desktop Cart Controls */}
+                <div className="hidden lg:block mb-6">
+                  {renderCartControls(false)}
+                </div>
+
+                {/* Trust Badges */}
+                <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-100">
+                  <div className="text-center">
+                    <FaTruck className="text-green-500 text-xl mx-auto mb-2" />
+                    <p className="text-xs text-gray-600">Free Delivery</p>
+                  </div>
+                  <div className="text-center">
+                    <FaShieldAlt className="text-blue-500 text-xl mx-auto mb-2" />
+                    <p className="text-xs text-gray-600">Secure Payment</p>
+                  </div>
+                  <div className="text-center">
+                    <FaUndo className="text-purple-500 text-xl mx-auto mb-2" />
+                    <p className="text-xs text-gray-600">Easy Returns</p>
+                  </div>
+                </div>
               </div>
 
-              <hr className="my-8 border-gray-300" />
-
-              {/* Product Description */}
-              <div>
-                <h3 className="text-2xl font-semibold mb-3">Description</h3>
-                <p className="text-gray-600 leading-relaxed text-justify text-base">
-                  {data.description} Lorem ipsum dolor sit amet consectetur
-                  adipisicing elit. Tempora autem sit illum omnis voluptatibus
-                  aperiam nesciunt sequi. Ad laudantium maxime suscipit porro,
-                  atque recusandae ut. Perspiciatis neque sapiente beatae
-                  aliquid nobis quidem nisi tenetur iste necessitatibus rerum
-                  officia, sit esse numquam vel, nemo inventore dignissimos,
-                  repellat consequatur voluptatum totam exercitationem.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Sticky Cart Controls */}
-          <div className="md:hidden sticky bottom-0 left-0 right-0 pb-2  z-50">
-            {cartData && Object.keys(cartData).length === 0 ? (
-              <button
-                onClick={() => handleAddCart(data.id, 1)}
-                className="w-full flex items-center justify-center gap-3 text-lg bg-gray-800 hover:bg-gray-900 p-4 rounded-md text-white font-medium cursor-pointer"
+              {/* Description */}
+              <motion.div
+                variants={itemVariants}
+                className="bg-white rounded-2xl p-8 shadow-lg"
               >
-                <FaCartShopping className="text-xl" />
-                Add to Cart
-              </button>
-            ) : (
-              <div className="flex justify-between items-center bg-white p-3 rounded-xl shadow-md">
-                <button
-                  onClick={() =>
-                    handleUpdate("-", parseInt(cartData?.quantity), id)
-                  }
-                  className="p-3 text-gray-500 border border-gray-500 rounded-md hover:bg-gray-100 cursor-pointer"
-                >
-                  <FaMinus />
-                </button>
-                <span className="px-4 py-1 text-xl border-gray-300">
-                  {cartData?.quantity}
-                </span>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Description
+                </h3>
+                <div className="relative">
+                  <p
+                    className={`text-gray-600 leading-relaxed ${
+                      showFullDescription ? "" : "line-clamp-4"
+                    }`}
+                  >
+                    {data.description} Lorem ipsum dolor sit amet consectetur
+                    adipisicing elit. Earum nesciunt debitis suscipit esse
+                    quasi, vel recusandae nam excepturi exercitationem, soluta
+                    ratione labore hic officiis dolorum itaque asperiores aut
+                    neque maiores amet, cum alias blanditiis corrupti. Voluptate
+                    ea maxime beatae earum illo qui consequuntur provident quos,
+                    quidem eaque reiciendis ratione dolorem eius excepturi,
+                    impedit ipsam soluta voluptatibus quas est distinctio iure.
+                  </p>
 
-                <button
-                  onClick={() =>
-                    handleUpdate("+", parseInt(cartData?.quantity), id)
-                  }
-                  className="p-3 text-gray-500 border border-gray-500 hover:bg-gray-100 rounded-md cursor-pointer"
-                >
-                  <FaPlus />
-                </button>
-              </div>
-            )}
+                  <motion.button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    whileHover={{ scale: 1.02 }}
+                    className="text-blue-600 hover:text-blue-800 font-medium mt-2 transition-colors duration-200"
+                  >
+                    {showFullDescription ? "Show Less" : "Read More"}
+                  </motion.button>
+                </div>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
+
+          {/* Mobile Sticky Cart */}
+          <AnimatePresence>
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-gray-200 z-50"
+            >
+              {renderCartControls(true)}
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
       )}
     </div>
   );

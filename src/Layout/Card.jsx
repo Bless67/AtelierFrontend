@@ -1,4 +1,3 @@
-import { baseUrl } from "../utils/CartUtils";
 import { Link } from "react-router-dom";
 const Card = ({ item, handleDeleteOpen, handleUpdate, setDeletedItem }) => {
   const handleDel = (productId, itemId, quantity) => {
@@ -16,8 +15,7 @@ const Card = ({ item, handleDeleteOpen, handleUpdate, setDeletedItem }) => {
         <div className="md:w-1/6 flex justify-center md:justify-start mb-4 md:mb-0">
           <img
             src={
-              `${baseUrl}${item.product.images[0].image}` ||
-              "/api/placeholder/80/80"
+              `${item.product.images[0].medium_url}` || "/api/placeholder/80/80"
             }
             alt={item.product.name}
             className="w-20 h-20 object-cover rounded-md"

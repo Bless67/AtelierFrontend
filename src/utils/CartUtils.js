@@ -19,7 +19,7 @@ export const addCart = async (productId, quantity) => {
     productId: productId,
     quantity: quantity,
   });
-  console.log(response.data);
+
   return response.data;
 };
 
@@ -28,7 +28,7 @@ export const updateCart = async (productId, quantity) => {
     productId: productId,
     quantity: quantity,
   });
-  console.log(response.data);
+
   return response.data;
 };
 
@@ -42,17 +42,17 @@ export const deleteCart = async (productId) => {
 
 export const getCart = async () => {
   const response = await api.get(`cart/`);
-  console.log(response.data);
+
   return response.data;
 };
 export const getSingleCart = async (productId) => {
   const response = await api.get(`cart/${productId}/`);
-  console.log(response.data);
+
   return response.data;
 };
 
 export const mergeCart = async () => {
   const response = await api.post("merge/");
-  console.log(response.data);
+
   return response.data;
 };

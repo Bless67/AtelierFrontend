@@ -10,6 +10,7 @@ import PaymentSuccess from "./components/PaymentSuccess";
 import PaymentFailed from "./components/PaymentFailed";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
+import NotFoundPage from "./Pages/NotFoundPage";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./Layout/Footer";
 import { useLocation } from "react-router-dom";
@@ -19,10 +20,11 @@ import { useEffect } from "react";
 const App = () => {
   const location = useLocation();
   const hideFooterRoutes = [
-    "/sucess",
+    "/success",
     "/checkout",
     "/failure",
     "/payment-success",
+    "*",
   ];
   const shouldShowFooter = !hideFooterRoutes.includes(location.pathname);
   useEffect(() => {
@@ -45,6 +47,7 @@ const App = () => {
           <Route path="/failure" element={<PaymentFailed />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
       {shouldShowFooter && <Footer />}

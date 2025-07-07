@@ -49,8 +49,8 @@ const NavBar = ({ showSearchbtn }) => {
               onClick={() => navigate(path)}
               className={`cursor-pointer transition-colors ${
                 location.pathname === path
-                  ? "text-orange-400 font-bold"
-                  : "hover:text-orange-300"
+                  ? "text-indigo-500 font-bold"
+                  : "hover:text-indigo-300"
               }`}
             >
               {name}
@@ -64,7 +64,11 @@ const NavBar = ({ showSearchbtn }) => {
             <motion.div
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.95 }}
-              className="cursor-pointer"
+              className={`cursor-pointer transition-colors ${
+                location.pathname === "/search"
+                  ? "text-indigo-500 font-bold"
+                  : "hover:text-indigo-400"
+              }`}
               onClick={() => navigate("/search")}
             >
               <FaSearch />
@@ -77,7 +81,13 @@ const NavBar = ({ showSearchbtn }) => {
             className="relative cursor-pointer"
             onClick={() => navigate("/cart")}
           >
-            <FaCartShopping />
+            <FaCartShopping
+              className={`cursor-pointer transition-colors ${
+                location.pathname === "/cart"
+                  ? "text-indigo-500 font-bold"
+                  : "hover:text-indigo-400"
+              }`}
+            />
             {parseInt(cartQuantity) > 0 && (
               <motion.span
                 className="absolute -top-2 -right-5 bg-red-600 px-2 rounded-full py-0.5 font-black text-xs"

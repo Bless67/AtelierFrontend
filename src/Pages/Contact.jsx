@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import NavBar from "../Layout/NavBar";
@@ -20,6 +20,8 @@ const fadeUp = {
 
 const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
   const {
     register,
@@ -28,16 +30,34 @@ const Contact = () => {
     formState: { errors },
   } = useForm();
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
   const onSubmit = async (data) => {
     try {
+      setLoading(true);
       await api.post("/customer-message/", data);
       toast.success("Message submitted");
       setSubmitted(true);
-      reset(); // reset form after successful submission
+      reset();
       window.scrollTo(0, 0);
+      setCooldown(60); // set 60 seconds cooldown
     } catch (error) {
-      console.error(error);
-      toast.error("There was an error, please try again");
+      if (error.response?.status === 429) {
+        toast.error(
+          "You’ve reached the limit for sending messages. Please wait and try again."
+        );
+      } else {
+        
+        toast.error("There was an error, please try again");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,13 +108,19 @@ const Contact = () => {
               <label htmlFor="name" className="block mb-1 font-medium">
                 Name
               </label>
-              <input
-                type="text"
-                id="name"
-                {...register("name", { required: "Name is required" })}
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
-                placeholder="Your name"
-              />
+              <div
+                className={`flex items-center border rounded-md px-3 py-2 ${
+                  errors.name ? "border-red-500" : ""
+                }`}
+              >
+                <input
+                  type="text"
+                  id="name"
+                  {...register("name", { required: "Name is required" })}
+                  className="w-full outline-none"
+                  placeholder="Your name"
+                />
+              </div>
               {errors.name && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.name.message}
@@ -106,19 +132,26 @@ const Contact = () => {
               <label htmlFor="email" className="block mb-1 font-medium">
                 Email
               </label>
-              <input
-                type="email"
-                id="email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
-                    message: "Please enter a valid email address",
-                  },
-                })}
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
-                placeholder="you@example.com"
-              />
+              <div
+                className={`flex items-center border rounded-md px-3 py-2 ${
+                  errors.email ? "border-red-500" : ""
+                }`}
+              >
+                <input
+                  type="email"
+                  id="email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value:
+                        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
+                      message: "Please enter a valid email address",
+                    },
+                  })}
+                  className="w-full outline-none"
+                  placeholder="you@example.com"
+                />
+              </div>
 
               {errors.email && (
                 <p className="text-red-500 text-sm mt-1">
@@ -131,13 +164,19 @@ const Contact = () => {
               <label htmlFor="message" className="block mb-1 font-medium">
                 Message
               </label>
-              <textarea
-                id="message"
-                rows="5"
-                {...register("message", { required: "Message is required" })}
-                className="w-full border border-gray-300 rounded px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-gray-800"
-                placeholder="Write your message here..."
-              />
+              <div
+                className={`flex items-center border rounded-md px-3 py-2 ${
+                  errors.message ? "border-red-500" : ""
+                }`}
+              >
+                <textarea
+                  id="message"
+                  rows="5"
+                  {...register("message", { required: "Message is required" })}
+                  className="w-full outline-none"
+                  placeholder="Write your message here..."
+                />
+              </div>
               {errors.message && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.message.message}
@@ -147,9 +186,18 @@ const Contact = () => {
 
             <button
               type="submit"
-              className="bg-gray-800 text-white px-6 py-3 rounded font-semibold hover:bg-gray-900 transition cursor-pointer"
+              disabled={loading || cooldown > 0}
+              className={`bg-gray-800 text-white px-6 py-3 rounded font-semibold transition cursor-pointer ${
+                loading || cooldown > 0
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-900"
+              }`}
             >
-              Send Message
+              {loading
+                ? "Sending..."
+                : cooldown > 0
+                ? `Please wait ${cooldown}s`
+                : "Send Message"}
             </button>
           </motion.form>
         </motion.div>

@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { baseUrl } from "../utils/CartUtils";
 
 const swipeThreshold = 10000;
 
@@ -20,12 +19,12 @@ const ProductCarousel = ({ images }) => {
   };
 
   return (
-    <div className="relative flex flex-col justify-center items-center w-full  overflow-hidden rounded-xl">
+    <div className="relative flex flex-col justify-center items-center w-full  overflow-hidden rounded">
       <AnimatePresence custom={direction}>
-        <div className="aspect-square   w-[90%] flex justify-center">
+        <div className="aspect-square   w-[100%] h-[100%] flex justify-center">
           <motion.img
             key={index}
-            src={`${baseUrl}${images[index].image}`}
+            src={`${images[index].medium_url}`}
             variants={variants}
             custom={direction}
             initial="enter"
@@ -40,7 +39,7 @@ const ProductCarousel = ({ images }) => {
               if (swipe < -swipeThreshold) paginate(1);
               else if (swipe > swipeThreshold) paginate(-1);
             }}
-            className="w-full h-full object-contain absolute"
+            className="w-full h-full object-corver absolute"
           />
         </div>
       </AnimatePresence>
