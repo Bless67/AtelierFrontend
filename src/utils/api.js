@@ -5,7 +5,7 @@ const api = axios.create({
   withCredentials: true,
 });
 api.interceptors.request.use((config) => {
-  const temporaryUserId = Cookies.get("temporay_user");
+  const temporaryUserId = Cookies.get("temporary_user");
   if (temporaryUserId) {
     config.headers["X-Temporary-User"] = temporaryUserId;
   }
