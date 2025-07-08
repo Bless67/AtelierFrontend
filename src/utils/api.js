@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import Cookies from "js-cookie";
 const api = axios.create({
   baseURL: "https://yabuwatatelier.up.railway.app/api",
   withCredentials: true,
