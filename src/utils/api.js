@@ -4,6 +4,13 @@ const api = axios.create({
   baseURL: "https://yabuwatatelier.up.railway.app/api",
   withCredentials: true,
 });
+api.interceptors.request.use((config) => {
+  const temporaryUserId = Cookies.get("temporay_user");
+  if (temporaryUserId) {
+    config.headers["X-Temporary-User"] = temporaryUserId;
+  }
+  return config;
+});
 export default api;
 /*
 api.interceptors.response.use(
