@@ -324,7 +324,10 @@ const SingleProduct = () => {
             </motion.div>
 
             {/* Product Info */}
-            <motion.div variants={itemVariants} className="space-y-6">
+            <motion.div
+              variants={itemVariants}
+              className="space-y-6 overflow-hidden"
+            >
               {/* Header Section */}
               <div className="bg-white rounded-2xl p-8 shadow-lg">
                 <div className="flex justify-between items-start mb-4">
@@ -441,7 +444,7 @@ const SingleProduct = () => {
                       showFullDescription ? "" : "line-clamp-4"
                     }`}
                   >
-                    {data.description} 
+                    {data.description}
                   </p>
 
                   <motion.button
