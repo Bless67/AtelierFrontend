@@ -30,7 +30,7 @@ const PaymentFailed = () => {
   if (!fromVerify) return <Navigate to="/" replace />;
 
   const handleWhatsAppContact = () => {
-    const phoneNumber = "1234567890"; // Replace with your WhatsApp number
+    const phoneNumber = "09161107183";
     const message = `Hi! I'm having trouble with my payment${
       orderData?.orderId ? ` for order #${orderData.orderId}` : ""
     }. The payment failed and I need assistance.`;
@@ -182,7 +182,7 @@ const PaymentFailed = () => {
             </button>
 
             <button
-              onClick={() => (window.location.href = "tel:+1234567890")}
+              onClick={() => (window.location.href = "tel:+2349161107183")}
               className="bg-blue-100 text-blue-700 py-2 px-4 rounded-lg font-medium hover:bg-blue-200 transition-colors duration-200 flex items-center justify-center gap-2"
             >
               <MdPhone className="w-5 h-5" />

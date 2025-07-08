@@ -10,13 +10,13 @@ export default function Footer() {
     {
       name: "Facebook",
       icon: FaFacebookF,
-      url: "https://facebook.com/yabuwatatelier",
+      url: "https://facebook.com/profile.php?id=61571468142528",
       color: "text-blue-400",
     },
     {
       name: "WhatsApp",
       icon: FaWhatsapp,
-      url: "https://wa.me/1234567890",
+      url: "https://wa.me/09161107183",
       color: "text-green-400",
     },
     {
