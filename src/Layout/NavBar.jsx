@@ -37,7 +37,7 @@ const NavBar = ({ showSearchbtn }) => {
         <Link to={"/"}>
           <div className=" flex justify-center items-center gap-x-2">
             <img src="/logo_cleanup_1.png" alt="logo" className="h-[40px]" />
-            <p className="font-bold text-xl ">Yabuwat Atelier</p>
+          
           </div>
         </Link>
 
