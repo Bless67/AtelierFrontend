@@ -441,14 +441,7 @@ const SingleProduct = () => {
                       showFullDescription ? "" : "line-clamp-4"
                     }`}
                   >
-                    {data.description} Lorem ipsum dolor sit amet consectetur
-                    adipisicing elit. Earum nesciunt debitis suscipit esse
-                    quasi, vel recusandae nam excepturi exercitationem, soluta
-                    ratione labore hic officiis dolorum itaque asperiores aut
-                    neque maiores amet, cum alias blanditiis corrupti. Voluptate
-                    ea maxime beatae earum illo qui consequuntur provident quos,
-                    quidem eaque reiciendis ratione dolorem eius excepturi,
-                    impedit ipsam soluta voluptatibus quas est distinctio iure.
+                    {data.description} 
                   </p>
 
                   <motion.button
