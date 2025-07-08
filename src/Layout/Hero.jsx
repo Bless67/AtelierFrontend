@@ -52,19 +52,7 @@ const Hero = () => {
           curated collection designed for confidence and comfort.
         </motion.p>
 
-        <motion.div
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.6 }}
-        >
-          <button className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-            Shop Collection
-          </button>
-          <button className="border-2 border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105">
-            View Lookbook
-          </button>
-        </motion.div>
+        
       </motion.div>
 
       {/* Animated accent elements */}
