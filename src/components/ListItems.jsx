@@ -48,6 +48,23 @@ const ListItems = () => {
 
   const totalPages = Math.ceil(data?.length / itemsPerPage);
 
+  // Event handlers
+  const handleAddToCart = useCallback((item) => {
+    // Implement add to cart logic
+    console.log("Adding to cart:", item);
+    // You can add toast notification here
+  }, []);
+
+  const handleQuickView = useCallback((item) => {
+    // Implement quick view logic
+    console.log("Quick view:", item);
+  }, []);
+
+  const handleWishlist = useCallback((item) => {
+    // Implement wishlist logic
+    console.log("Add to wishlist:", item);
+  }, []);
+
   const handleRetry = () => {
     refetch();
   };
