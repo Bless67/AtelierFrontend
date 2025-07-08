@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 const Hero = () => {
   return (
-    <section className="bg-gradient-to-br from-black via-gray-800 to-black text-white py-16 min-h-screen flex items-center justify-center relative overflow-hidden">
+    <section className="bg-gradient-to-br from-black via-gray-800 to-black text-white py-16  flex  justify-center relative overflow-hidden">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-10 left-10 w-32 h-32 border border-indigo-500 rounded-full"></div>
@@ -51,8 +51,6 @@ const Hero = () => {
           From bold looks to timeless styles, redefine your wardrobe with our
           curated collection designed for confidence and comfort.
         </motion.p>
-
-        
       </motion.div>
 
       {/* Animated accent elements */}

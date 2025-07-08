@@ -21,25 +21,26 @@ const NavBar = ({ showSearchbtn }) => {
   ];
 
   return (
-    <nav className="shadow text-white bg-gray-900 shadow-gray-300">
+    <nav className="shadow text-white bg-gradient-to-br from-black via-gray-800 to-black shadow-gray-300">
       <SideBar sideBarOpen={sideBarOpen} setSideBarOpen={setSideBarOpen} />
       <div className="container mx-auto flex justify-between items-center p-4">
         {/* Sidebar toggle (mobile) */}
-        <button
-          className="cursor-pointer text-2xl md:hidden"
-          onClick={() => setSideBarOpen(true)}
-        >
-          <FaBars />
-        </button>
+        <div className="flex items-center gap-x-6">
+          <button
+            className="cursor-pointer text-2xl md:hidden"
+            onClick={() => setSideBarOpen(true)}
+          >
+            <FaBars />
+          </button>
+          {/* Logo */}
 
-        {/* Logo */}
-
-        <Link to={"/"}>
-          <div className=" flex justify-center items-center gap-x-2">
-            <img src="/logo_cleanup_1.png" alt="logo" className="h-[40px]" />
-          
-          </div>
-        </Link>
+          <Link to={"/"}>
+            <div className=" flex justify-center items-center gap-x-2">
+              <img src="/logo_cleanup_1.png" alt="logo" className="h-[40px]" />
+              <p>Yabuwat Atelier</p>
+            </div>
+          </Link>
+        </div>
 
         {/* Nav Links */}
         <ul className="hidden text-xl md:flex space-x-8 font-medium">
@@ -59,7 +60,7 @@ const NavBar = ({ showSearchbtn }) => {
         </ul>
 
         {/* Search + Cart */}
-        <div className="flex gap-x-6 text-2xl px-3 md:px-0">
+        <div className="flex gap-x-4 text-2xl px-2 md:px-0">
           {showSearchbtn && (
             <motion.div
               whileHover={{ scale: 1.2 }}
