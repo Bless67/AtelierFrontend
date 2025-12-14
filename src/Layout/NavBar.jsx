@@ -14,8 +14,7 @@ const NavBar = ({ showSearchbtn }) => {
 
   const menuItems = [
     { name: "Home", path: "/" },
-    { name: "Orders", path: "/orders" },
-    { name: "About", path: "/about" },
+    { name: "Catalog", path: "/catalog" },
 
     { name: "Contact", path: "/contact" },
   ];
@@ -35,9 +34,8 @@ const NavBar = ({ showSearchbtn }) => {
           {/* Logo */}
 
           <Link to={"/"}>
-            <div className=" flex justify-center items-center gap-x-2">
-              <img src="/logo_cleanup_1.png" alt="logo" className="h-[40px]" />
-              <p className="">Yabuwat Atelier</p>
+            <div className=" flex justify-center items-center gap-x-2 flex-col p-0 my-0">
+              <img src="/icon.png" alt="logo" className="h-12" />
             </div>
           </Link>
         </div>

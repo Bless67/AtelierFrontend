@@ -1,37 +1,18 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+
+const apiUrl = import.meta.env.VITE_API_URL;
 const api = axios.create({
-  baseURL: "https://yabuwatatelier.up.railway.app/api",
+  baseURL: `${apiUrl}`,
   withCredentials: true,
 });
+
 api.interceptors.request.use((config) => {
-  const temporaryUserId = Cookies.get("temporary_user");
-  if (temporaryUserId) {
-    config.headers["X-Temporary-User"] = temporaryUserId;
+  const temporararyUserId = Cookies.get("temporary_user");
+  if (temporararyUserId) {
+    config.headers["X-Temporary-User"] = temporararyUserId;
   }
   return config;
 });
+
 export default api;
-/*
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        await api.post(
-          "refresh/",
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        return api(originalRequest);
-      } catch (refreshError) {
-        console.error(refreshError);
-      }
-    }
-    return Promise.reject(error);
-  }
-);*/

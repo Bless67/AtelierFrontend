@@ -118,9 +118,7 @@ const ListCard = memo(({ item, onAddToCart, onQuickView, onWishlist }) => {
 
         <img
           src={
-            imageError
-              ? "/api/placeholder/400/400"
-              : `${item.images[0].medium_url}`
+            imageError ? "/api/placeholder/400/400" : item.images[0].image_url
           }
           alt={`${item.name} - ${item.category} product image`}
           className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${

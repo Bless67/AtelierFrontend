@@ -1,3 +1,4 @@
+// SingleProduct.jsx - COMPLETE IMPROVED VERSION
 import { useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import NavBar from "../Layout/NavBar";
@@ -9,7 +10,6 @@ import {
   FaMinus,
   FaHeart,
   FaShare,
-  FaStar,
   FaShieldAlt,
   FaTruck,
   FaUndo,
@@ -35,7 +35,6 @@ const SingleProduct = () => {
   const [cartError, setCartError] = useState(null);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const fetchData = async () => {
     const response = await api.get(`product/${id}/`);
@@ -116,17 +115,36 @@ const SingleProduct = () => {
     );
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (navigator.share) {
-      navigator.share({
-        title: data?.name,
-        text: `Check out this product: ${data?.name}`,
-        url: window.location.href,
-      });
+      try {
+        await navigator.share({
+          title: data?.name,
+          text: `Check out this product: ${data?.name}`,
+          url: window.location.href,
+        });
+        toast.success("🔗 Shared successfully!");
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          navigator.clipboard.writeText(window.location.href);
+          toast.success("🔗 Link copied to clipboard!");
+        }
+      }
     } else {
       navigator.clipboard.writeText(window.location.href);
       toast.success("🔗 Link copied to clipboard!");
     }
+  };
+
+  // Format currency helper
+  const formatCurrency = (amount) => {
+    if (!amount) return "₦0";
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   const containerVariants = {
@@ -314,13 +332,13 @@ const SingleProduct = () => {
           animate="visible"
           className="max-w-7xl mx-auto px-4 py-8"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Product Images */}
             <motion.div
               variants={itemVariants}
               className="space-y-4 overflow-hidden"
             >
-              <ProductCarousel images={data.images} />
+              <ProductCarousel images={data.images} productName={data.name} />
             </motion.div>
 
             {/* Product Info */}
@@ -329,51 +347,50 @@ const SingleProduct = () => {
               className="space-y-6 overflow-hidden"
             >
               {/* Header Section */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
+                  <div className="flex-1 pr-4">
                     <motion.h1
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2 leading-tight"
+                      className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 leading-tight"
                     >
                       {data.name}
                     </motion.h1>
-
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <FaStar key={i} className="text-yellow-400 text-sm" />
-                        ))}
-                      </div>
-                      <span className="text-gray-600 text-sm">
-                        (4.8) • 124 reviews
-                      </span>
-                    </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-shrink-0">
                     <motion.button
                       onClick={handleWishlist}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className={`p-3 rounded-full border-2 transition-all duration-200 ${
+                      className={`p-2 sm:p-3 rounded-full border-2 transition-all duration-200 ${
                         isWishlisted
                           ? "bg-red-50 border-red-200 text-red-500"
                           : "bg-gray-50 border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200"
                       }`}
+                      aria-label={
+                        isWishlisted
+                          ? "Remove from wishlist"
+                          : "Add to wishlist"
+                      }
                     >
-                      <FaHeart className={isWishlisted ? "fill-current" : ""} />
+                      <FaHeart
+                        className={`text-sm sm:text-base ${
+                          isWishlisted ? "fill-current" : ""
+                        }`}
+                      />
                     </motion.button>
 
-                    {/* <motion.button
+                    <motion.button
                       onClick={handleShare}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="p-3 rounded-full border-2 border-gray-200 bg-gray-50 text-gray-400 hover:text-blue-500 hover:border-blue-200 transition-all duration-200"
+                      className="p-2 sm:p-3 rounded-full border-2 border-gray-200 bg-gray-50 text-gray-400 hover:text-blue-500 hover:border-blue-200 transition-all duration-200"
+                      aria-label="Share product"
                     >
-                      <FaShare />
-                    </motion.button> */}
+                      <FaShare className="text-sm sm:text-base" />
+                    </motion.button>
                   </div>
                 </div>
 
@@ -384,29 +401,38 @@ const SingleProduct = () => {
                   transition={{ delay: 0.2 }}
                   className="mb-6"
                 >
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-4xl font-bold text-gray-900">
-                      ₦{data.price}
+                  <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+                    <span className="text-3xl sm:text-4xl font-bold text-gray-900">
+                      {formatCurrency(data.original_price)}
                     </span>
-                    <span className="text-lg text-gray-500 line-through">
-                      ₦{data.original_price}
-                    </span>
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
-                      {Math.floor(
-                        ((data.original_price - data.price) / data.price) * 100
+                    {data.original_price &&
+                      data.original_price > data.price && (
+                        <>
+                          <span className="text-base sm:text-lg text-gray-500 line-through">
+                            {formatCurrency(data.price)}
+                          </span>
+                          <span className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-md">
+                            {Math.round(
+                              ((data.price - data.original_price) /
+                                data.price) *
+                                100
+                            )}
+                            % off
+                          </span>
+                        </>
                       )}
-                      % OFF
-                    </span>
                   </div>
                 </motion.div>
 
                 {/* Category */}
-                <div className="mb-6">
-                  <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
-                    <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
-                    {data.category}
-                  </span>
-                </div>
+                {data.category && (
+                  <div className="mb-6">
+                    <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium">
+                      <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                      {data.category}
+                    </span>
+                  </div>
+                )}
 
                 {/* Desktop Cart Controls */}
                 <div className="hidden lg:block mb-6">
@@ -414,17 +440,17 @@ const SingleProduct = () => {
                 </div>
 
                 {/* Trust Badges */}
-                <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-100">
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 pt-6 border-t border-gray-100">
                   <div className="text-center">
-                    <FaTruck className="text-green-500 text-xl mx-auto mb-2" />
+                    <FaTruck className="text-green-500 text-lg sm:text-xl mx-auto mb-2" />
                     <p className="text-xs text-gray-600">Free Delivery</p>
                   </div>
                   <div className="text-center">
-                    <FaShieldAlt className="text-blue-500 text-xl mx-auto mb-2" />
+                    <FaShieldAlt className="text-blue-500 text-lg sm:text-xl mx-auto mb-2" />
                     <p className="text-xs text-gray-600">Secure Payment</p>
                   </div>
                   <div className="text-center">
-                    <FaUndo className="text-purple-500 text-xl mx-auto mb-2" />
+                    <FaUndo className="text-purple-500 text-lg sm:text-xl mx-auto mb-2" />
                     <p className="text-xs text-gray-600">Easy Returns</p>
                   </div>
                 </div>
@@ -433,27 +459,31 @@ const SingleProduct = () => {
               {/* Description */}
               <motion.div
                 variants={itemVariants}
-                className="bg-white rounded-2xl p-8 shadow-lg"
+                className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg"
               >
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   Description
                 </h3>
                 <div className="relative">
                   <p
-                    className={`text-gray-600 leading-relaxed ${
+                    className={`text-sm sm:text-base text-gray-600 leading-relaxed ${
                       showFullDescription ? "" : "line-clamp-4"
                     }`}
                   >
                     {data.description}
                   </p>
 
-                  <motion.button
-                    onClick={() => setShowFullDescription(!showFullDescription)}
-                    whileHover={{ scale: 1.02 }}
-                    className="text-blue-600 hover:text-blue-800 font-medium mt-2 transition-colors duration-200"
-                  >
-                    {showFullDescription ? "Show Less" : "Read More"}
-                  </motion.button>
+                  {data.description && data.description.length > 200 && (
+                    <motion.button
+                      onClick={() =>
+                        setShowFullDescription(!showFullDescription)
+                      }
+                      whileHover={{ scale: 1.02 }}
+                      className="text-blue-600 hover:text-blue-800 font-medium mt-2 transition-colors duration-200 text-sm sm:text-base"
+                    >
+                      {showFullDescription ? "Show Less" : "Read More"}
+                    </motion.button>
+                  )}
                 </div>
               </motion.div>
             </motion.div>
@@ -465,7 +495,7 @@ const SingleProduct = () => {
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-gray-200 z-50"
+              className="lg:hidden sticky bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-gray-200 z-10 pb-safe mt-5"
             >
               {renderCartControls(true)}
             </motion.div>

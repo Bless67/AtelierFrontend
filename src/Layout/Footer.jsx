@@ -16,7 +16,7 @@ export default function Footer() {
     {
       name: "WhatsApp",
       icon: FaWhatsapp,
-      url: "https://wa.me/09161107183",
+      url: `https://wa.me/${import.meta.env.VITE_CHECKOUT_WHATSAPP_NUMBER}`,
       color: "text-green-400",
     },
     {
@@ -44,8 +44,8 @@ export default function Footer() {
             </Link>
           </h2>
           <p className="text-sm text-gray-300 leading-relaxed">
-            Quality fashion and accessories that blend tradition with elegance.
-            Crafting timeless pieces for the modern wardrobe.
+            Quality fashion that blend tradition with elegance. Crafting
+            timeless pieces for the modern wardrobe.
           </p>
         </div>
 
@@ -70,11 +70,7 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-4 text-lg text-white">Support</h3>
           <ul className="space-y-3 text-sm">
-            {[
-              { label: "Contact Us", path: "/contact" },
-              { label: "About Us", path: "/about" },
-              { label: "Orders", path: "/orders" },
-            ].map((link) => (
+            {[{ label: "Contact Us", path: "/contact" }].map((link) => (
               <li key={link.path}>
                 <Link
                   to={link.path}
@@ -121,7 +117,7 @@ export default function Footer() {
           <p>
             © {new Date().getFullYear()} Yabuwat Atelier. All rights reserved.
           </p>
-          <div className="flex gap-6">
+          {/* <div className="flex gap-6">
             <Link
               to="/privacy"
               className="hover:text-white transition-colors duration-200"
@@ -140,7 +136,7 @@ export default function Footer() {
             >
               Returns
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

@@ -1,12 +1,8 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  FaTimes,
-  FaHome,
-  FaClipboardList,
-  FaInfoCircle,
-  FaPhone,
-} from "react-icons/fa";
+import { FaTimes, FaHome, FaInfoCircle, FaPhone } from "react-icons/fa";
+import { FaCartShopping } from "react-icons/fa6";
+
 import { motion, AnimatePresence } from "framer-motion";
 
 const SideBar = ({ sideBarOpen, setSideBarOpen }) => {
@@ -22,8 +18,8 @@ const SideBar = ({ sideBarOpen, setSideBarOpen }) => {
 
   const menuItems = [
     { name: "Home", path: "/", icon: <FaHome /> },
-    { name: "Orders", path: "/orders", icon: <FaClipboardList /> },
-    { name: "About", path: "/about", icon: <FaInfoCircle /> },
+    { name: "Catalog", path: "/catalog", icon: <FaInfoCircle /> },
+    { name: "cart", path: "/cart", icon: <FaCartShopping /> },
 
     { name: "Contact", path: "/contact", icon: <FaPhone /> },
   ];

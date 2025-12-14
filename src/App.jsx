@@ -1,14 +1,9 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "./Pages/Home";
+import Catalog from "./Pages/Catalog";
 import SingleProduct from "./Pages/SingleProduct";
 import SearchPage from "./Pages/SearchPage";
 import CartItem from "./Pages/CartItem";
-import CheckOut from "./Pages/CheckOut";
-import PaymentVerification from "./Pages/PaymentVerification";
-import CheckOrders from "./Pages/CheckOrders";
-import PaymentSuccess from "./components/PaymentSuccess";
-import PaymentFailed from "./components/PaymentFailed";
-import About from "./Pages/About";
+import Home from "./Pages/Home";
 import Contact from "./Pages/Contact";
 import NotFoundPage from "./Pages/NotFoundPage";
 import ScrollToTop from "./components/ScrollToTop";
@@ -37,17 +32,13 @@ const App = () => {
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/product/:id" element={<SingleProduct />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/cart" element={<CartItem />} />
-          <Route path="/checkout" element={<CheckOut />} />
-          <Route path="/payment-success" element={<PaymentVerification />} />
-          <Route path="/orders" element={<CheckOrders />} />
-          <Route path="/success" element={<PaymentSuccess />} />
-          <Route path="/failure" element={<PaymentFailed />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFoundPage />} />
+          <Route path="/cart" element={<CartItem />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/product/:id" element={<SingleProduct />} />
+          <Route path="/catalog" element={<Catalog />} />
+
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </div>
       {shouldShowFooter && <Footer />}
