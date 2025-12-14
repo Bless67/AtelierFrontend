@@ -361,28 +361,6 @@ const SingleProduct = () => {
 
                   <div className="flex gap-2 flex-shrink-0">
                     <motion.button
-                      onClick={handleWishlist}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className={`p-2 sm:p-3 rounded-full border-2 transition-all duration-200 ${
-                        isWishlisted
-                          ? "bg-red-50 border-red-200 text-red-500"
-                          : "bg-gray-50 border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200"
-                      }`}
-                      aria-label={
-                        isWishlisted
-                          ? "Remove from wishlist"
-                          : "Add to wishlist"
-                      }
-                    >
-                      <FaHeart
-                        className={`text-sm sm:text-base ${
-                          isWishlisted ? "fill-current" : ""
-                        }`}
-                      />
-                    </motion.button>
-
-                    <motion.button
                       onClick={handleShare}
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}

@@ -164,11 +164,11 @@ const ListCard = memo(({ item, onAddToCart, onQuickView, onWishlist }) => {
 
         <div className="flex items-center justify-between mb-2">
           <span className="text-xl font-bold text-green-700">
-            {formatPrice(item.price)}
+            {formatPrice(item.original_price)}
           </span>
-          {item.original_price && item.original_price > item.price && (
+          {item.price && (
             <span className="text-sm text-gray-500 line-through">
-              {formatPrice(item.original_price)}
+              {formatPrice(item.price)}
             </span>
           )}
         </div>
