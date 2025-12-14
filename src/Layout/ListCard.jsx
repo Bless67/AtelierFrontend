@@ -178,29 +178,7 @@ const ListCard = memo(({ item, onAddToCart, onQuickView, onWishlist }) => {
             {item.category}
           </span>
 
-          {item.name && (
-            <div className="flex items-center gap-1">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => {
-                  const rating = 5;
-                  if (i < Math.floor(rating)) {
-                    return (
-                      <BsStarFill key={i} className="text-xs text-yellow-400" />
-                    );
-                  } else if (i === Math.floor(rating) && rating % 1 !== 0) {
-                    return (
-                      <BsStarHalf key={i} className="text-xs text-yellow-400" />
-                    );
-                  } else {
-                    return <BsStar key={i} className="text-xs text-gray-300" />;
-                  }
-                })}
-              </div>
-              <span className="text-xs text-gray-500">
-                ({item.reviewCount || 24})
-              </span>
-            </div>
-          )}
+          {item.name && <div className="flex items-center gap-1"></div>}
         </div>
 
         {/* Stock Status */}
