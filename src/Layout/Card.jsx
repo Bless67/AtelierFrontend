@@ -37,9 +37,9 @@ const Card = ({
     return "/api/placeholder/80/80";
   };
 
-  const totalPrice = parseInt(item.product.price) * item.quantity;
+  const totalPrice = parseInt(item.product.original_price) * item.quantity;
   const hasDiscount =
-    item.product.original_price &&
+    item.product.price &&
     item.product.original_price < item.product.price;
 
   return (
