@@ -107,7 +107,7 @@ const Card = ({
                         ((item.product.price - item.product.original_price)) /
                           item.product.price) *
                           100
-                      )}
+                      }
                       % OFF
                     </span>
                   </>
