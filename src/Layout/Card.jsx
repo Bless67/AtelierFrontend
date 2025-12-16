@@ -40,7 +40,7 @@ const Card = ({
   const totalPrice = parseInt(item.product.price) * item.quantity;
   const hasDiscount =
     item.product.original_price &&
-    item.product.original_price > item.product.price;
+    item.product.original_price < item.product.price;
 
   return (
     <motion.div
@@ -95,17 +95,17 @@ const Card = ({
 
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <p className="font-bold text-lg sm:text-xl text-gray-800">
-                  {formatCurrency(item.product.price)}
+                  {formatCurrency(item.product.original_price)}
                 </p>
                 {hasDiscount && (
                   <>
                     <p className="text-sm text-gray-500 line-through">
-                      {formatCurrency(item.product.original_price)}
+                      {formatCurrency(item.product.price)}
                     </p>
                     <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
                       {Math.round(
-                        ((item.product.original_price - item.product.price) /
-                          item.product.original_price) *
+                        ((item.product.price - item.product.original_price)) /
+                          item.product.price) *
                           100
                       )}
                       % OFF
