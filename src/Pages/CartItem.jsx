@@ -82,12 +82,12 @@ Please confirm availability and provide payment details. Thank you!`;
       return { total: 0, itemCount: 0, uniqueItems: 0, savings: 0 };
 
     const total = cartData.reduce(
-      (sum, item) => sum + parseInt(item.product.price) * item.quantity,
+      (sum, item) => sum + parseInt(item.product.original_price)) * item.quantity,
       0
     );
 
     const originalTotal = cartData.reduce((sum, item) => {
-      const originalPrice = item.product.original_price || item.product.price;
+      const originalPrice = item.product.price
       return sum + parseInt(originalPrice) * item.quantity;
     }, 0);
 
