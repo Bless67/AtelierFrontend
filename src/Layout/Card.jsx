@@ -38,10 +38,7 @@ const Card = ({
   };
 
   const totalPrice = parseInt(item.product.original_price) * item.quantity;
-  const hasDiscount =
-    item.product.price &&
-    item.product.original_price < item.product.price;
-
+  const hasDiscount = item.product.price 
   return (
     <motion.div
       whileHover={{ scale: 1.01 }}
